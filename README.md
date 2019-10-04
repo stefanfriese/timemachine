@@ -1,7 +1,17 @@
 # Udacity DevOps Capstone Project
 
+## Prerequisites
+* AWS account available
+* aws cli installed and configured to use access keys
+* Kubernetes cli kubectl installed (at least v1.10)
+* Amazon EKS cli eksctl installed
+
 ### Steps
-* Jenkins lints all html files in the folder
-* Successful linting causes jenkins to build a docker image
+* Lint check
+* Build docker image
 * Deploy docker image to dockerhub
-* Trigger a rolling update on kubernetes cluster
+* Rolling update on EKS kubernetes cluster
+
+## Local Run
+* Standalone:  `python3 app.py`
+* Run in Docker:  `./docker_local.sh`
