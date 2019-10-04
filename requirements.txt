@@ -1,0 +1,10 @@
+Flask
+gunicorn
+flasgger
+flask_caching
+datetime
+python-dateutil
+pytz
+jsonschema<3.0.0
+pylint
+pytest
