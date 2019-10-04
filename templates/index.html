@@ -1,0 +1,55 @@
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Date Converter Microservice</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container">
+
+            <h2 class="header">
+                This API can normalize dates:
+            </h2>
+            <ul>
+                <li>Normalize dates with different formats.</li>
+                <li>Converts dates to unix timestamp.</li>
+                <li>Converts unix timestamp to date.</li>
+            </ul>
+
+            <br>
+            API Usage Guide: /apidocs
+            <br><br>
+
+            <h3>Examples:</h3>
+            <br>
+            Convert date to unix timestamp:
+            <br>
+            <code>URL/normalize/December 24 2019</code>
+            <br>
+            Output:
+            <br>
+            <code>
+              {
+                "day": "2019-12-24", 
+                "input": "December 24 2019", 
+                "timestamp": 1577145600.0
+              }
+            </code>
+            <br><br>
+            Convert unix timestamp to date:
+            <br>
+            <code>URL/normalize/1577145600</code>
+            <br>
+            Output:
+            <br>
+            <code>
+                {
+                    "day": "2019-12-24", 
+                    "timestamp": "1577145600"
+                }
+            </code>
+            <br>
+        </div>
+    </body>
+</html>

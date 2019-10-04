@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timemachine-deployment
+  labels:
+    app: timemachine
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: timemachine
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: timemachine
+    spec:
+      containers:
+      - name: timemachine
+        image: y3key/timemachine-kube
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            scheme: HTTP
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1

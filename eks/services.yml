@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: timemachine-service
+spec:
+  selector:
+    app: timemachine
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
