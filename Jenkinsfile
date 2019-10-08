@@ -9,7 +9,7 @@ pipeline {
                 sh 'tidy -q -e templates/*.html'
             }
         }
-        stage('Build Docker Iamge') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     dockerImage = docker.build("y3key/timemachine-kube:${env.GIT_COMMIT[0..7]}")
