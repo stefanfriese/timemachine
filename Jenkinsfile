@@ -10,10 +10,15 @@ pipeline {
             }
         }
         stage('Build Docker Image') {
-          steps {
-            sh "./docker_build.sh"
-          }
-        }
+            steps {
+                script {
+                    dockerImage = docker.build("y3key/timemachine-kube:${env.GIT_COMMIT[0..7]}")
+                    docker.withRegistry('', registryCredential) {
+                          dockerImage.push()
+                    }
+                               
+            }
+        }  
         stage('Deploy Docker Image') {
             steps {
                 sh "./docker_deploy.sh"
