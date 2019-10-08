@@ -15,7 +15,7 @@ pipeline {
                     dockerImage = docker.build("y3key/timemachine-kube:${env.GIT_COMMIT[0..7]}")
                     docker.withRegistry('', registryCredential) {
                           dockerImage.push()
-                    }
+                }
                                
             }
         }  
