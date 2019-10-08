@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Deploy Docker Image') {
             steps {
-                sh "kubectl set image deployment/timemachine-deployment timemachine=y3key/timemachine-kube:${env.GIT_COMMIT[0..7]}"
+                sh "./docker_deploy.sh"
             }
         }
     }
