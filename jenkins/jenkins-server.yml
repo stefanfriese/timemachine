@@ -1,0 +1,96 @@
+---
+Description: >
+  CloudFormation script to create EC2 instances and install Jenkins.
+Parameters:
+  Environment:
+    Description: An Enviroment name to tag resources
+    Type: String
+    Default: jenkins
+
+  SourceIP:
+    Description: IP address to allow SSH access
+    Type: String
+    Default: IP/32
+
+  JenkinsKey:
+    Description: KeyName to access jenkins host
+    Type: "AWS::EC2::KeyPair::KeyName"
+    Default: eks
+
+Mappings:
+  PrjRegion:
+    us-east-1:
+      HVM64: ami-04b9e92b5572fa0d1 
+
+Resources:
+  PrjSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to ec2 and SHH access
+      VpcId:
+        Fn::ImportValue: !Sub "${Environment}-VPCID"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${Environment}-WASG
+
+  PrjEc2:
+    Type: AWS::EC2::Instance
+    Properties:
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt-get update -y
+          sudo apt-get install default-jdk wget -y
+          cd /home/ubuntu
+          wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+          sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+          sudo apt-get update -y
+          sudo apt-get install jenkins tidy -y
+          sudo systemctl status jenkins      
+          sudo systemctl enable jenkins    
+      SecurityGroupIds:
+        - Ref: PrjSG
+      SubnetId:
+        Fn::ImportValue: !Sub "${Environment}-SBN01"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdk"
+          Ebs:
+            VolumeSize: "10"
+            DeleteOnTermination: true
+            VolumeType: "gp2"
+      ImageId: !FindInMap [PrjRegion, !Ref "AWS::Region", HVM64]
+      InstanceType: t3.small
+      KeyName: !Sub ${JenkinsKey}
+  
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain:
+        Fn::ImportValue: !Sub "${Environment}-VPCID"
+
+  EIPAssociation0:
+    Type: AWS::EC2::EIPAssociation
+    DependsOn:
+      - PrjEc2
+      - EIP
+    Properties:
+      InstanceId:
+        Ref: PrjEc2
+      AllocationId:
+        Fn::GetAtt:
+          - EIP
+          - AllocationId
+
+Outputs:
+  Website:
+    Description: The Public DNS for the EC2 instance - to access Jenkins
+    Value: !Join ['', ['http://', !GetAtt 'PrjEc2.PublicDnsName', ':8080']]
